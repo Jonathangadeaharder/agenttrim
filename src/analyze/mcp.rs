@@ -4,7 +4,7 @@ use std::path::Path;
 
 use crate::analyze::ledger_reader;
 use crate::analyze::safety_matrix::SafetyMatrix;
-use agentalign_shared::models::{McpServerDefinition, ReportKind, UnusedReport, UsageEntry};
+use crate::shared::models::{McpServerDefinition, ReportKind, UnusedReport, UsageEntry};
 
 /// Health status of an MCP server binary.
 #[derive(Debug, Clone, PartialEq)]
@@ -318,7 +318,7 @@ mod tests {
 
     fn make_stdio_server(command: &[&str]) -> McpServerDefinition {
         McpServerDefinition {
-            transport: agentalign_shared::models::TransportType::Local,
+            transport: crate::shared::models::TransportType::Local,
             command: Some(command.iter().map(|s| s.to_string()).collect()),
             url: None,
             headers: None,
@@ -330,7 +330,7 @@ mod tests {
 
     fn make_remote_server(url: &str) -> McpServerDefinition {
         McpServerDefinition {
-            transport: agentalign_shared::models::TransportType::Remote,
+            transport: crate::shared::models::TransportType::Remote,
             command: None,
             url: Some(url.to_string()),
             headers: None,

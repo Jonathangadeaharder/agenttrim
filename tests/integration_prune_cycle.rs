@@ -40,7 +40,7 @@ fn test_skill_analysis_stale_skill_is_safe_to_purge() {
         .expect("Should find stale-assistant");
 
     assert!(stale_report.safe_to_purge, "Stale skill with no SKILL.md should be safe to purge");
-    assert_eq!(stale_report.kind, agentalign_shared::models::ReportKind::Skill);
+    assert_eq!(stale_report.kind, agenttrim::shared::models::ReportKind::Skill);
 
     let active_report = reports.iter()
         .find(|r| r.key_identifier == "active-tool")
@@ -61,7 +61,7 @@ fn test_prune_removes_stale_skills() {
     let analyzer = make_analyzer();
     let reports = analyzer.analyze(&agents_root, 0, None).expect("Analysis should succeed");
 
-    let stale: Vec<agentalign_shared::models::UnusedReport> = reports.into_iter().filter(|r| r.safe_to_purge).collect();
+    let stale: Vec<agenttrim::shared::models::UnusedReport> = reports.into_iter().filter(|r| r.safe_to_purge).collect();
     assert!(!stale.is_empty(), "Should find stale skills");
 
     let outcome = agenttrim::prune::prune_skills_unified(&stale, &skills_dir, false)
@@ -107,7 +107,7 @@ fn test_prune_dry_run_does_not_delete() {
     let analyzer = make_analyzer();
     let reports = analyzer.analyze(&agents_root, 0, None).expect("Analysis should succeed");
 
-    let stale: Vec<agentalign_shared::models::UnusedReport> = reports.into_iter().filter(|r| r.safe_to_purge).collect();
+    let stale: Vec<agenttrim::shared::models::UnusedReport> = reports.into_iter().filter(|r| r.safe_to_purge).collect();
 
     let outcome = agenttrim::prune::prune_skills_unified(&stale, &skills_dir, true)
         .expect("Dry-run prune should succeed");

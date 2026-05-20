@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::collections::HashMap;
 use sysinfo::{ProcessesToUpdate, System};
 
-use agentalign_shared::models::McpServerDefinition;
+use crate::shared::models::McpServerDefinition;
 
 /// A running process that may be an MCP server subprocess.
 #[derive(Debug, Clone)]

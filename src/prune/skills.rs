@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 
 use crate::analyze::safety_matrix::SafetyMatrix;
 use crate::prune::backup;
-use agentalign_shared::models::{ReportKind, UnusedReport};
+use crate::shared::models::{ReportKind, UnusedReport};
 
 /// Remove skill directories and symlinks from `~/.agents/skills/`.
 ///

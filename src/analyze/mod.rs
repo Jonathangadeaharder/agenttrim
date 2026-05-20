@@ -6,9 +6,9 @@ pub mod skills;
 pub mod static_scanner;
 pub mod validation_hook;
 
-pub use agentalign_shared::models::{UnusedReport, UsageEntry};
+pub use crate::shared::models::{UnusedReport, UsageEntry};
 #[allow(unused_imports)]
-pub use agentalign_shared::traits::TrimAnalyzer;
+pub use crate::shared::traits::TrimAnalyzer;
 
 use anyhow::Result;
 use std::path::Path;
@@ -88,7 +88,7 @@ pub fn run_full_analysis(
 /// Load MCP server definitions from the canonical config.
 fn load_mcp_server_map(
     path: &Path,
-) -> Result<std::collections::HashMap<String, agentalign_shared::models::McpServerDefinition>> {
+) -> Result<std::collections::HashMap<String, crate::shared::models::McpServerDefinition>> {
     if !path.exists() {
         return Ok(std::collections::HashMap::new());
     }
@@ -96,7 +96,7 @@ fn load_mcp_server_map(
 
     // Try flat map
     if let Ok(map) =
-        serde_json::from_str::<std::collections::HashMap<String, agentalign_shared::models::McpServerDefinition>>(
+        serde_json::from_str::<std::collections::HashMap<String, crate::shared::models::McpServerDefinition>>(
             &content,
         )
     {
@@ -106,7 +106,7 @@ fn load_mcp_server_map(
     // Try nested under "mcp" key
     #[derive(serde::Deserialize)]
     struct Wrapper {
-        mcp: std::collections::HashMap<String, agentalign_shared::models::McpServerDefinition>,
+        mcp: std::collections::HashMap<String, crate::shared::models::McpServerDefinition>,
     }
     if let Ok(wrapper) = serde_json::from_str::<Wrapper>(&content) {
         return Ok(wrapper.mcp);

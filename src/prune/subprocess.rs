@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::time::Duration;
 use sysinfo::{Pid, ProcessesToUpdate, Signal, System};
 
-use agentalign_shared::models::McpServerDefinition;
+use crate::shared::models::McpServerDefinition;
 
 use super::super::analyze::process_scanner::{find_mcp_processes, McpProcess};
 

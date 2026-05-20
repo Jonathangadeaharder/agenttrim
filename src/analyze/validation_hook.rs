@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 
 use crate::analyze::safety_matrix::SafetyMatrix;
 use crate::time_provider::TimeProvider;
-use agentalign_shared::models::UnusedReport;
+use crate::shared::models::UnusedReport;
 
 pub const SEVEN_DAYS_SECS: i64 = 7 * 86_400;
 pub const NINETY_DAYS_SECS: i64 = 90 * 86_400;
@@ -209,7 +209,7 @@ impl<'a> PrePurgeValidation<'a> {
 mod tests {
     use super::*;
     use crate::time_provider::FrozenTimeProvider;
-    use agentalign_shared::models::ReportKind;
+    use crate::shared::models::ReportKind;
     use std::fs;
 
     fn make_report(id: &str, path: Option<&str>, safe: bool, ts: Option<i64>) -> UnusedReport {

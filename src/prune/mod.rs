@@ -9,7 +9,7 @@ pub use skills::PruneSkillsReport;
 use anyhow::Result;
 use std::path::PathBuf;
 
-use agentalign_shared::models::{ReportKind, UnusedReport};
+use crate::shared::models::{ReportKind, UnusedReport};
 
 /// Combined report from a full prune operation.
 #[derive(Debug, Clone)]

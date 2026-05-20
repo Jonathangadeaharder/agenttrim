@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 use crate::analyze::safety_matrix::SafetyMatrix;
 use crate::prune::backup;
-use agentalign_shared::models::{McpServerDefinition, ReportKind, UnusedReport};
+use crate::shared::models::{McpServerDefinition, ReportKind, UnusedReport};
 
 /// Remove MCP server entries from the canonical config file.
 ///
@@ -159,7 +159,7 @@ mod tests {
 
     fn make_server_def() -> McpServerDefinition {
         McpServerDefinition {
-            transport: agentalign_shared::models::TransportType::Local,
+            transport: crate::shared::models::TransportType::Local,
             command: Some(vec!["/bin/sh".to_string()]),
             url: None,
             headers: None,

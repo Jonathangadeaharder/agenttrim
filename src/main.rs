@@ -6,7 +6,7 @@ use agenttrim::analyze;
 use agenttrim::analyze::ledger_reader;
 use agenttrim::prune;
 use agenttrim::time_provider::SystemTimeProvider;
-use agentalign_shared::models::McpServerDefinition;
+use agenttrim::shared::models::McpServerDefinition;
 
 use analyze::validation_hook::{IssueSeverity, PrePurgeValidation};
 
@@ -260,10 +260,10 @@ fn run_prune(
 
     for r in &all_reports {
         let kind = match r.kind {
-            agentalign_shared::models::ReportKind::Skill => "skill",
-            agentalign_shared::models::ReportKind::McpServer => "mcp",
-            agentalign_shared::models::ReportKind::OrphanedProcess => "process",
-            agentalign_shared::models::ReportKind::StaleBackup => "backup",
+            agenttrim::shared::models::ReportKind::Skill => "skill",
+            agenttrim::shared::models::ReportKind::McpServer => "mcp",
+            agenttrim::shared::models::ReportKind::OrphanedProcess => "process",
+            agenttrim::shared::models::ReportKind::StaleBackup => "backup",
         };
         println!(
             "  [{kind}] {} — {}",
