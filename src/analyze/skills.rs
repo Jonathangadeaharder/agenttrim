@@ -7,7 +7,7 @@ use crate::analyze::ledger_reader::{self, SkillUsageEntry};
 use crate::analyze::safety_matrix::SafetyMatrix;
 use crate::analyze::static_scanner;
 use crate::time_provider::TimeProvider;
-use crate::shared::models::{ReportKind, UnusedReport, UsageEntry};
+use crate::shared::models::{ReportKind, UnusedReport, UsageEntry, UsageInfo};
 
 /// Source of skill usage telemetry (SQLite + JSON ledgers).
 pub trait UsageStore: Send + Sync {
@@ -231,12 +231,6 @@ impl<'a> SkillAnalyzer<'a> {
 
         UsageInfo { last_used, total_calls }
     }
-}
-
-/// Internal usage summary for a single skill.
-struct UsageInfo {
-    last_used: Option<i64>,
-    total_calls: u64,
 }
 
 #[cfg(test)]

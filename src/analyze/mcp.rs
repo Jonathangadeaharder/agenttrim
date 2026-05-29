@@ -1,10 +1,11 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use std::collections::HashMap;
 use std::path::Path;
 
 use crate::analyze::ledger_reader;
 use crate::analyze::safety_matrix::SafetyMatrix;
-use crate::shared::models::{McpServerDefinition, ReportKind, UnusedReport, UsageEntry};
+use crate::shared::mcp_config::load_mcp_config;
+use crate::shared::models::{McpServerDefinition, ReportKind, UnusedReport, UsageEntry, UsageInfo};
 
 /// Health status of an MCP server binary.
 #[derive(Debug, Clone, PartialEq)]
@@ -33,7 +34,7 @@ impl McpAnalyzer {
         canonical_path: &Path,
         threshold_days: u64,
     ) -> Result<Vec<UnusedReport>> {
-        let servers = Self::load_mcp_config(canonical_path)?;
+        let servers = load_mcp_config(canonical_path)?;
 
         if servers.is_empty() {
             return Ok(Vec::new());
@@ -197,35 +198,6 @@ impl McpAnalyzer {
         duplicate_ids
     }
 
-    /// Parse the canonical MCP config JSON file.
-    fn load_mcp_config(
-        path: &Path,
-    ) -> Result<HashMap<String, McpServerDefinition>> {
-        if !path.exists() {
-            return Ok(HashMap::new());
-        }
-
-        let content =
-            std::fs::read_to_string(path)
-                .with_context(|| format!("Failed to read MCP config at {:?}", path))?;
-
-        // Try parsing as a flat map first
-        if let Ok(map) = serde_json::from_str::<HashMap<String, McpServerDefinition>>(&content) {
-            return Ok(map);
-        }
-
-        // Try parsing as CanonicalWorkspaceState (nested under "mcp")
-        #[derive(serde::Deserialize)]
-        struct Wrapper {
-            mcp: HashMap<String, McpServerDefinition>,
-        }
-        if let Ok(wrapper) = serde_json::from_str::<Wrapper>(&content) {
-            return Ok(wrapper.mcp);
-        }
-
-        anyhow::bail!("Cannot parse MCP config: unknown JSON structure at {:?}", path);
-    }
-
     /// Get usage information for a specific server from the usage ledger.
     fn get_server_usage(
         server_id: &str,
@@ -303,13 +275,6 @@ impl McpAnalyzer {
 
         reasons
     }
-}
-
-/// Internal usage summary for a single MCP server.
-#[allow(dead_code)]
-struct UsageInfo {
-    last_used: Option<i64>,
-    total_calls: u64,
 }
 
 #[cfg(test)]
@@ -405,7 +370,7 @@ mod tests {
     #[test]
     fn test_load_mcp_config_not_found() {
         let path = Path::new("/nonexistent/config.json");
-        let servers = McpAnalyzer::load_mcp_config(path).unwrap();
+        let servers = load_mcp_config(path).unwrap();
         assert!(servers.is_empty());
     }
 }

@@ -155,3 +155,10 @@ pub enum EnvScope {
     Global,
     PerAgent(String),
 }
+
+/// Internal usage summary for a single MCP server or skill.
+#[derive(Debug, Clone, Default)]
+pub struct UsageInfo {
+    pub last_used: Option<i64>,
+    pub total_calls: u64,
+}
