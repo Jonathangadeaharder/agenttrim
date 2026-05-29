@@ -7,8 +7,6 @@ pub mod static_scanner;
 pub mod validation_hook;
 
 pub use crate::shared::models::{UnusedReport, UsageEntry};
-#[allow(unused_imports)]
-pub use crate::shared::traits::TrimAnalyzer;
 
 use anyhow::Result;
 use std::path::Path;
@@ -17,6 +15,7 @@ use crate::analyze::mcp::McpAnalyzer;
 use crate::analyze::process_scanner::{find_mcp_processes, McpProcess};
 use crate::analyze::safety_matrix::SafetyMatrix;
 use crate::analyze::skills::{RealUsageStore, SkillAnalyzer};
+use crate::shared::mcp_config::load_mcp_config;
 use crate::time_provider::TimeProvider;
 
 /// Comprehensive report from a full analysis run.
@@ -60,7 +59,7 @@ pub fn run_full_analysis(
 
     // Run process scanner
     // We load the MCP config to pass defined servers to the scanner
-    let mcp_servers = load_mcp_server_map(mcp_config_path).unwrap_or_default();
+    let mcp_servers = load_mcp_config(mcp_config_path)?;
     let processes = find_mcp_processes(&mcp_servers).unwrap_or_default();
 
     // Count candidates and protected
@@ -83,34 +82,4 @@ pub fn run_full_analysis(
         total_candidates,
         protected_ignored,
     })
-}
-
-/// Load MCP server definitions from the canonical config.
-fn load_mcp_server_map(
-    path: &Path,
-) -> Result<std::collections::HashMap<String, crate::shared::models::McpServerDefinition>> {
-    if !path.exists() {
-        return Ok(std::collections::HashMap::new());
-    }
-    let content = std::fs::read_to_string(path)?;
-
-    // Try flat map
-    if let Ok(map) =
-        serde_json::from_str::<std::collections::HashMap<String, crate::shared::models::McpServerDefinition>>(
-            &content,
-        )
-    {
-        return Ok(map);
-    }
-
-    // Try nested under "mcp" key
-    #[derive(serde::Deserialize)]
-    struct Wrapper {
-        mcp: std::collections::HashMap<String, crate::shared::models::McpServerDefinition>,
-    }
-    if let Ok(wrapper) = serde_json::from_str::<Wrapper>(&content) {
-        return Ok(wrapper.mcp);
-    }
-
-    Ok(std::collections::HashMap::new())
 }

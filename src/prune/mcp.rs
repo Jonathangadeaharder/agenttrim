@@ -1,10 +1,10 @@
 use anyhow::{Context, Result};
-use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use crate::analyze::safety_matrix::SafetyMatrix;
 use crate::prune::backup;
-use crate::shared::models::{McpServerDefinition, ReportKind, UnusedReport};
+use crate::shared::mcp_config::load_mcp_config;
+use crate::shared::models::{ReportKind, UnusedReport};
 
 /// Remove MCP server entries from the canonical config file.
 ///
@@ -100,35 +100,7 @@ pub fn prune_mcp_servers(
     })
 }
 
-/// Load MCP config from a JSON file.
-fn load_mcp_config(
-    path: &Path,
-) -> Result<HashMap<String, McpServerDefinition>> {
-    if !path.exists() {
-        return Ok(HashMap::new());
-    }
-
-    let content = std::fs::read_to_string(path)
-        .with_context(|| format!("Failed to read MCP config at {:?}", path))?;
-
-    // Try flat map
-    if let Ok(map) = serde_json::from_str::<HashMap<String, McpServerDefinition>>(&content) {
-        return Ok(map);
-    }
-
-    // Try nested under "mcp" key
-    #[derive(serde::Deserialize)]
-    struct Wrapper {
-        mcp: HashMap<String, McpServerDefinition>,
-    }
-    if let Ok(wrapper) = serde_json::from_str::<Wrapper>(&content) {
-        return Ok(wrapper.mcp);
-    }
-
-    anyhow::bail!("Cannot parse MCP config: unknown JSON structure at {:?}", path);
-}
-
-/// Report from pruning MCP servers.
+/// Report of pruning MCP servers.
 #[derive(Debug, Clone)]
 pub struct PruneMcpReport {
     /// Servers successfully removed from config.
@@ -144,7 +116,10 @@ pub struct PruneMcpReport {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashMap;
     use std::fs;
+
+    use crate::shared::models::McpServerDefinition;
 
     fn make_mcp_report(id: &str, safe: bool) -> UnusedReport {
         UnusedReport {

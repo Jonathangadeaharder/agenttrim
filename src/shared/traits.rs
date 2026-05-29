@@ -28,12 +28,3 @@ pub trait McpFormatStrategy: ConfigurationAdapter {
         None
     }
 }
-
-/// Trim analyzer: evaluates resource usage and identifies candidates for pruning.
-pub trait TrimAnalyzer {
-    /// Analyze usage and return a report of unused/abandoned resources.
-    fn analyze_usage(&self, agents_root: &Path) -> Result<Vec<crate::shared::models::UnusedReport>>;
-
-    /// Name of this analyzer (e.g., "skills", "mcp", "processes").
-    fn analyzer_name(&self) -> &'static str;
-}
