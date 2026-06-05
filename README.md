@@ -6,7 +6,7 @@ Version: 0.1.0 · Rust edition 2021 · MIT licensed
 
 ## CLI Commands
 
-```text
+```
 agenttrim analyze   Scan and report unused resources
 agenttrim prune     Remove unused resources (with safety gates)
 agenttrim vacuum    Deep clean: kill orphaned MCP subprocesses
@@ -75,7 +75,7 @@ Daemon that watches `~/.agents/skills/*/SKILL.md` for mtime changes and logs usa
 
 ### Directory Layout
 
-```text
+```
 src/
 ├── main.rs                  # CLI entrypoint (clap subcommands)
 ├── lib.rs                   # Module re-exports
@@ -105,7 +105,7 @@ src/
 
 ### ~/.agents/ Layout
 
-```text
+```
 ~/.agents/
 ├── usage.db                  # SQLite usage ledger (auto-created)
 ├── .skill-usage.json         # JSON skill usage ledger (supplementary)
@@ -134,7 +134,7 @@ The following items are protected and can never be pruned:
 ### Prune Pipeline
 
 1. **Analyze** — SkillAnalyzer + McpAnalyzer cross-reference telemetry against threshold
-2. **Validate** — PrePurgeValidation checks: safety matrix, path still exists, mtime older than 7 days, backup writable
+2. **Validate** — PrePurgeValidation checks: safety matrix, path still exists, mtime < 7 days, backup writable
 3. **Confirm** — Interactive prompt (skipped with `--force` or `--dry-run`)
 4. **Backup** — Timestamped snapshot to `~/.agents/backups/`
 5. **Delete** — Remove skill dirs/symlinks, or remove MCP entries from config JSON
@@ -146,7 +146,7 @@ The following items are protected and can never be pruned:
 | `clap` | 4 | CLI argument parsing (derive) |
 | `serde` | 1 | Serialization (derive) |
 | `serde_json` | 1 | JSON parsing/emission |
-| `toml_edit` | 0.22 | TOML config manipulation (reserved, not yet active in code paths) |
+| `toml_edit` | 0.22 | TOML config manipulation |
 | `thiserror` | 2 | Error type derives |
 | `anyhow` | 1 | Error propagation |
 | `dirs` | 5 | Home directory resolution |
